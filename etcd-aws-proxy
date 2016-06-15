@@ -35,4 +35,9 @@ if ! aws --region $region s3 ls $discovery_bucket > /dev/null 2>&1 ;
 then
   aws --region $region s3 mb $discovery_bucket 
 fi
-aws --region $region s3 cp $etcd_initial_cluster_file_path $discovery_bucket/etcd/$(basename $etcd_initial_cluster_file_path)
+if aws --region $region s3 ls $etcd_initial_cluster_file_path $discovery_bucket/etcd/$(basename $etcd_initial_cluster_file_path) > /dev/null 2>&1 ;
+then
+  aws --region $region s3 rm $etcd_initial_cluster_file_path $discovery_bucket/etcd/$(basename $etcd_initial_cluster_file_path)
+else
+ aws --region $region s3 cp $etcd_initial_cluster_file_path $discovery_bucket/etcd/$(basename $etcd_initial_cluster_file_path)
+fi
