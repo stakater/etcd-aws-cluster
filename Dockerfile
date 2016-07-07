@@ -1,2 +1,2 @@
-FROM MonsantoCo/etcd-aws-cluster
+FROM monsantoCo/etcd-aws-cluster
 COPY etcd-aws-proxy /etcd-aws-proxy
