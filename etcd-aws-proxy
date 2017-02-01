@@ -33,11 +33,8 @@ elapsedTime=$(($current_time - $creation_time))
 if [[ ! -f "$etcd_peers_file_path" ]]; then
     echo "$pkg: $etcd_peers_file_path doesn't exist."
     exit 4
-elif [ $elapsedTime -gt 3600 ]; then
-    echo "Not new member. Won't publish initial-cluster file."
-    exit 0
 fi
-# Newly lauched instace; publish ips
+# Publish ips
 if  etcd_initial_cluster=$(grep ETCD_INITIAL_CLUSTER= $etcd_peers_file_path) ;
 then
     echo $etcd_initial_cluster > $etcd_initial_cluster_file_path
