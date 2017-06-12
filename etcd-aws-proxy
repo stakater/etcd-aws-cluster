@@ -1,5 +1,5 @@
 #! /bin/bash
-# This script generate a /etcd/initial-cluster file from /etc/sysconfig/etcd-peers
+# This script generate a /ETCD_FOLDER_NAME/initial-cluster file from /etc/sysconfig/etcd-peers
 # and upload it to s3 which can be downloaded and used by other etcd proxies.
 #
 
@@ -7,10 +7,11 @@ pkg="etcd-aws-proxy"
 version="0.5"
 etcd_peers_file_path="/etc/sysconfig/etcd-peers"
 etcd_initial_cluster_file_path="/etc/sysconfig/initial-cluster"
+etcd_folder=${ETCD_FOLDER_NAME:-"etcd"}
 
 # Get S3 bucket url. Either pass in as S3BUCKET (e.g. s3://my-coreos-cluster-clountinit)
 # or generate one from AWS account name: s3://${account}-coreos-cluster-cloudinit.
-# initial-cluster file will be uploaded as S3BUCKET/etcd/initial-cluster.
+# initial-cluster file will be uploaded as S3BUCKET/ETCD_FOLDER_NAME/initial-cluster.
 account=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq --raw-output .accountId)
 if [[ ! $account ]]; then
     echo "$pkg: failed to get the aws account id."
@@ -46,6 +47,6 @@ fi
 region=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq --raw-output .region)
 if ! aws --region $region s3 ls $discovery_bucket > /dev/null 2>&1 ;
 then
-  aws --region $region s3 mb $discovery_bucket 
+  aws --region $region s3 mb $discovery_bucket
 fi
-aws --region $region s3 cp $etcd_initial_cluster_file_path $discovery_bucket/etcd/$(basename $etcd_initial_cluster_file_path)
+aws --region $region s3 cp $etcd_initial_cluster_file_path $discovery_bucket/${etcd_folder}/$(basename $etcd_initial_cluster_file_path)
